@@ -1,0 +1,35 @@
+version: "3"
+
+services: 
+  airflow-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: airflow-server
+    restart: always
+    ports:
+      - 3141:8080
+    depends_on: 
+      - airflow-mysql-server
+    networks:
+      - airflow-network
+  
+  airflow-mysql-server:
+    image: mysql:latest
+    container_name: airflow-mysql-server
+    hostname: dbmysqlserver01
+    command: --default-authentication-plugin=mysql_native_password    
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: Mcdoodle22!
+      MYSQL_USER: airflow
+      MYSQL_PASSWORD: airflow
+      MYSQL_DATABASE: airflow
+    networks:
+      - airflow-network
+
+networks:
+  airflow-network:
+    driver: bridge
