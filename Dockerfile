@@ -74,7 +74,6 @@ RUN set -ex \
     && pip install 'redis==3.2' \
     && if [ -n "${PYTHON_DEPS}" ]; then pip install ${PYTHON_DEPS}; fi 
 
-RUN pip uninstall SQLAlchemy
 RUN pip install SQLAlchemy==1.3.15
 
 COPY script/entrypoint.sh /entrypoint.sh

@@ -5,7 +5,7 @@
 # Therefore, this script must only derives Airflow AIRFLOW__ variables from other variables
 # when the user did not provide their own configuration.
 
-TRY_LOOP="20"
+TRY_LOOP="100"
 
 # Global defaults and back-compat
 : "${AIRFLOW_HOME:="/usr/local/airflow"}"
@@ -34,6 +34,8 @@ fi
 wait_for_port() {
   local name="$1" host="$2" port="$3"
   local j=0
+  echo >&2 "$(date) - $host:$port Waiting for $name to start...."
+
   while ! nc -z "$host" "$port" >/dev/null 2>&1 < /dev/null; do
     j=$((j+1))
     if [ $j -ge $TRY_LOOP ]; then
@@ -41,11 +43,14 @@ wait_for_port() {
       exit 1
     fi
     echo "$(date) - waiting for $name... $j/$TRY_LOOP"
-    sleep 5
+    sleep 10
   done
+
+  echo >&2 "$(date) - $host:$port $name has started"
 }
 
-wait_for_port "AIRFLOW_DB_TYPE" "$AIRFLOW_DB_HOST" "$AIRFLOW_DB_PORT"
+
+wait_for_port "$AIRFLOW_DB_TYPE" "$AIRFLOW_DB_HOST" "$AIRFLOW_DB_PORT"
 
 case "$1" in
   webserver)
